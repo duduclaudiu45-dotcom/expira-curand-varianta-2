@@ -1,0 +1,31 @@
+
+name: Convert MP4 to TS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Convert video
+        run: |
+          ffmpeg -y -i canale4kro_reminder_loop.mp4 \
+          -c:v copy -an -bsf:v h264_mp4toannexb \
+          -f mpegts canale4kro_abonament_expirat.ts
+
+      - name: Save TS
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add canale4kro_abonament_expirat.ts
+          git commit -m "Add TS video"
+          git push
